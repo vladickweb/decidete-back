@@ -1,0 +1,42 @@
+version: '3'
+services:
+  postgres:
+    image: 'postgres'
+    container_name: 'decidete_postgres'
+    environment:
+      POSTGRES_DB: 'decidete_postgres'
+      POSTGRES_USER: 'decidete_postgres'
+      POSTGRES_PASSWORD: 'decidete_postgres'
+      ALLOW_IP_RANGE: '0.0.0.0/0'
+    ports:
+      - '5432:5432'
+  postgresTest:
+    image: 'postgres'
+    container_name: 'decidete_postgres_test'
+    environment:
+      POSTGRES_DB: 'decidete_postgres_test'
+      POSTGRES_USER: 'decidete_postgres_test'
+      POSTGRES_PASSWORD: 'decidete_postgres_test'
+      ALLOW_IP_RANGE: '0.0.0.0/0'
+    ports:
+      - '5433:5432'
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass redisAdmin
+    ports:
+      - "6379:6379"
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+
+    environment:
+      - REDIS_REPLICATION_MODE=master
